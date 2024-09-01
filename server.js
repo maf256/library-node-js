@@ -18,12 +18,6 @@ app.get("/", (req, res) => {
 
 app.use("/genre", Genre);
 
-// app.post("/genre", (req, res) => {
-//   res.send({
-//     message: "Hello World!22222222222",
-//   });
-// });
-
 //_________________Book_________________
 app.use("/book", Book);
 
