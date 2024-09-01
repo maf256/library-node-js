@@ -83,10 +83,34 @@ const deleteAuthor = async (req, res) => {
     return res.status(500).json({ error: "An error occurred while deleting the author", message: err.message });
   }
 };
+
+const updateAuthor = async (req, res) => {
+  const { name, biography, birthday } = req.body;
+
+  try {
+    // Check if the author exists
+    const authorResult = await client.query(queryes.getAuthorById, [req.params.id]);
+    if (authorResult.rowCount === 0) {
+      return res.status(404).json({ error: "Author not found" });
+    }
+
+    // Update the author
+    await client.query(queryes.updateAuthor, [name, biography, birthday, req.params.id]);
+
+    // Respond with success message
+    return res.status(200).json({ message: "Author updated successfully" });
+  } catch (err) {
+    console.error('Error updating author:', err);
+
+    // Handle specific errors if necessary, otherwise send a generic error response
+    return res.status(500).json({ error: "An error occurred while updating the author", message: err.message });
+  }
+};
 module.exports = {
   getAuthors,
   getAuthorById,
   addAuthor,
-  deleteAuthor
+  deleteAuthor,
+  updateAuthor
 };
   
