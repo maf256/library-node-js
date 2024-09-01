@@ -83,10 +83,30 @@ const deleteGenre = async (req, res) => {
     return res.status(500).json({ error: "An error occurred while deleting the Genre", message: err.message });
   }
 };
+
+const updateGenre = async (req, res) => {
+  const { name } = req.body;
+  try {
+    // Check if the Genre exists
+    const GenreResult = await client.query(queryes.getGenreById, [req.params.id]);
+    if (GenreResult.rowCount === 0) {
+      return res.status(404).json({ error: "Genre not found" });
+    }
+    // Update the Genre
+    await client.query(queryes.updateGenre, [name, req.params.id]);
+    // Respond with success message
+    return res.status(200).json({ message: "Genre updated successfully" });
+  } catch (err) {
+    console.error('Error updating Genre:', err);
+    // Handle specific errors if necessary, otherwise send a generic error response
+    return res.status(500).json({ error: "An error occurred while updating the Genre", message: err.message });
+  }
+}
 module.exports = {
   getGenres,
   getGenreById,
   addGenre,
-  deleteGenre
+  deleteGenre,
+  updateGenre
 };
   
