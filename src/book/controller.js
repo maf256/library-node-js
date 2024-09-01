@@ -69,7 +69,7 @@ const addBook = async (req, res) => {
     console.error('Error adding Book:', err);
 
     // Respond with a generic error message
-    return res.status(500).json({ error: "An error occurred while adding the Book" });
+    return res.status(500).json({ error: "An error occurred while adding the Book", message: err.message });
   }
 };
 
@@ -103,7 +103,7 @@ const updateBook = async (req, res) => {
     // Check if the Book exists
     const BookResult = await client.query(queryes.getBookById, [req.params.id]);
     if (BookResult.rowCount === 0) {
-      return res.status(404).json({ error: "Genre not found" });
+      return res.status(404).json({ error: "Book not found" });
     }
     // Update the Genre
     await client.query(queryes.updateBook, [title, author_id, genre_id, publication_year, copies_available, total_copies, req.params.id]);
