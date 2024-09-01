@@ -83,16 +83,6 @@ const deleteAuthor = async (req, res) => {
     return res.status(500).json({ error: "An error occurred while deleting the author", message: err.message });
   }
 };
-
-  
-  // try {
-  //   client.query(queryes.deleteAuthor, [req.params.id], (err, result) => {
-  //     if (err) throw err;
-  //     res.status(200).json("Author deleted");
-  //   });
-  // } catch (err) {
-  //   console.log(err);
-  // }
 module.exports = {
   getAuthors,
   getAuthorById,
