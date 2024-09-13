@@ -1,4 +1,17 @@
-const getBooks = "SELECT * FROM book";
+const getBooks = `
+    SELECT 
+        book.title, 
+        book.publication_year, 
+        book.copies_available, 
+        book.total_copies, 
+        author.name AS author_name, 
+        genre.name AS genre_name
+    FROM 
+        book
+    JOIN 
+        author ON book.author_id = author.id
+    JOIN 
+        genre ON book.genre_id = genre.id`;
 const getBookById = "SELECT * FROM book WHERE id = $1";
 const addBook = `INSERT INTO book 
     (title, author_id, genre_id,publication_year,copies_available,total_copies) 

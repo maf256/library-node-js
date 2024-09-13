@@ -2,12 +2,14 @@ const express = require("express");
 const Genre = require("./src/genre/routes");
 const Book = require("./src/book/routes");
 const Authors = require("./src/author/routes");
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
 require("dotenv").config();
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 app.use(express.json());
+app.use(cors());  // Enable CORS for all routes
 
 app.get("/", (req, res) => {
   res.send({
