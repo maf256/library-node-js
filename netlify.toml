@@ -1,7 +1,6 @@
 [build]
   functions = "netlify/functions" # Set the path for serverless functions
-  publish = "dist" # Specify the directory for frontend assets, if any
-
+  
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"
