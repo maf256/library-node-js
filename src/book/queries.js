@@ -3,7 +3,10 @@ const getBooks = `
         book.title, 
         book.publication_year, 
         book.copies_available, 
-        book.total_copies, 
+        book.total_copies,
+        book.id,
+        book.author_id,
+        book.genre_id, 
         author.name AS author_name, 
         genre.name AS genre_name
     FROM 
