@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 require("dotenv").config();
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+// process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 app.use(express.json());
 app.use(cors());  // Enable CORS for all routes
 
