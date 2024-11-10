@@ -34,7 +34,7 @@ const getBookById = async (req, res) => {
 };
 
 
-
+// Add Book With Authors And Genres
 const addBook = async (req, res) => {
   const { 
     title, 
@@ -73,6 +73,89 @@ const addBook = async (req, res) => {
   }
 };
 
+// Add Book 
+async function addBookWithAuthorsAndGenres(req, res) {
+  const { 
+    title, 
+    author_id, 
+    genre_id, 
+    publication_year, 
+    copies_available, 
+    total_copies,
+    authorIds,
+    genreIds 
+  } = req.body;
+  console.log(req.body);
+  
+  // const client = await pool.connect();
+
+  try {
+    // await client.query('BEGIN');
+
+
+    // Check if the Book already exists
+    const BookExistsResult = await client.query(queryes.checkBookExists, [title]);
+
+    if (BookExistsResult.rowCount > 0) {
+      return res.status(400).json({ error: "Book already exists" });
+    }
+    // Step 1: Insert the book
+    // const bookInsertQuery = `
+    //   INSERT INTO book (title, publication_year, copies_available, total_copies) 
+    //   VALUES ($1, $2, $3, $4)
+    //   RETURNING id;
+    // `;
+    // const bookValues = [
+    //   bookDetails.title,
+    //   bookDetails.publication_year,
+    //   bookDetails.copies_available,
+    //   bookDetails.total_copies
+    // ];
+    const addBookResult = await client.query(queryes.addBook, [
+      title, 
+      author_id, 
+      genre_id, 
+      publication_year, 
+      copies_available, 
+      total_copies]);
+    
+    // const bookResult = await client.query(bookInsertQuery, bookValues);
+    const newBookId = addBookResult.rows[0].id;
+
+    // Step 2: Link authors to the book in `book_authors`
+    // const bookAuthorsInsertQuery = `
+    //   INSERT INTO book_authors (book_id, author_id) VALUES ($1, $2);
+    // `;
+
+    for (const authorId of authorIds) {
+      console.log("newBookId, authorId",newBookId, authorId);
+      
+      await client.query(queryes.bookAuthorsInsertQuery, [newBookId, authorId]);
+    }
+
+    // Step 3: Link genres to the book in `book_genres`
+    // const bookGenresInsertQuery = `
+    //   INSERT INTO book_genres (book_id, genre_id) VALUES ($1, $2);
+    // `;
+
+    for (const genreId of genreIds) {
+      console.log("newBookId, genreId",newBookId, genreId);
+      
+      await client.query(queryes.bookGenresInsertQuery, [newBookId, genreId]);
+    }
+
+    // await client.query('COMMIT');
+    console.log('Book added successfully with authors and genres.');
+
+    return res.status(201).json({ message: "Book added successfully", Book: addBookResult.rows[0] });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error adding book:', error);
+  } finally {
+    // client.release();
+  }
+}
 
 const deleteBook = async (req, res) => {
   try {
@@ -125,6 +208,7 @@ module.exports = {
    getBookById,
    addBook,
    deleteBook,
-   updateBook
+   updateBook,
+   addBookWithAuthorsAndGenres
 };
   
