@@ -2,6 +2,23 @@ const fs = require("fs");
 const pg = require("pg");
 const url = require("url");
 
+// const { Pool } = require('pg');
+// db.js
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: process.env.API_USER,
+  host: process.env.API_HOST,
+  database: "defaultdb",
+  password: process.env.API_PASSWORD,
+  port: 542802432,
+});
+
+module.exports = pool;
+
+
+// const pool = new Pool({
+
 require("dotenv").config();
 const config = {
   user: process.env.API_USER,
