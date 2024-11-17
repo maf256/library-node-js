@@ -1,6 +1,6 @@
 const getBooks = `
 SELECT 
-  b.id AS book_id,
+  b.id AS id,
   b.title,
   b.publication_year,
   b.copies_available,

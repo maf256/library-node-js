@@ -44,7 +44,7 @@ async function getAllBooks(req, res) {
     const result = await client.query(queryes.getBooks);
 
     // Return the list of books
-    return res.status(200).json({ books: result.rows });
+    return res.status(200).json(result.rows);
 
   } catch (error) {
     console.error('Error fetching books:', error);
