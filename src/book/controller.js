@@ -172,7 +172,7 @@ async function addBookWithAuthorsAndGenres(req, res) {
     await client.query('ROLLBACK');
     console.error('Error adding book:', error);
   } finally {
-    client.release();
+    // client.release();
   }
 }
 
@@ -270,6 +270,8 @@ async function updateBookWithAuthorsAndGenres(req, res) {
   } = req.body;
   const bookId = req.params.id; // The ID of the book to update
   // const client = await pool.connect();
+  console.log(req.body);
+  
 
   try {
     await client.query('BEGIN');
