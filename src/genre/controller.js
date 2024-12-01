@@ -6,11 +6,12 @@ const getGenres = async (req, res) => {
     const result = await client.query(queryes.getGenres);
     return res.status(200).json(result.rows);
   } catch (err) {
-    console.log('Error fetching Genres:',err);
-    return res.status(500).json({ error: "An error occurred while fetching Genres" });
+    console.log("Error fetching Genres:", err);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while fetching Genres" });
   }
 };
-
 
 const getGenreById = async (req, res) => {
   try {
@@ -24,55 +25,60 @@ const getGenreById = async (req, res) => {
 
     // Respond with the Genre details
     return res.status(200).json(result.rows[0]);
-
   } catch (err) {
-    console.error('Error fetching Genre:', err);
+    console.error("Error fetching Genre:", err);
 
     // Respond with a generic error message
-    return res.status(500).json({ error: "An error occurred while fetching the Genre" });
+    return res
+      .status(500)
+      .json({ error: "An error occurred while fetching the Genre" });
   }
 };
-
-
 
 const addGenre = async (req, res) => {
   const { name } = req.body;
 
   try {
     // Check if the Genre already exists
-    const GenreExistsResult = await client.query(queryes.checkGenreExists, [name]);
+    const GenreExistsResult = await client.query(queryes.checkGenreExists, [
+      name,
+    ]);
 
     if (GenreExistsResult.rowCount > 0) {
-      return res.status(400).json({ error: "DUPLICATE_GENRE", message: "Genre already exists" });
+      return res
+        .status(400)
+        .json({ error: "DUPLICATE_GENRE", message: "Genre already exists" });
     }
 
     // Add the new Genre
     const addGenreResult = await client.query(queryes.addGenre, [name]);
 
     // Respond with the newly added Genre's details
-    return res.status(201).json({ 
-      message: "Genre added successfully", 
-      genre: addGenreResult.rows[0] 
+    return res.status(201).json({
+      message: "Genre added successfully",
+      genre: addGenreResult.rows[0],
     });
-
   } catch (err) {
-    console.error('Error adding Genre:', { error: err.message, stack: err.stack });
-    return res.status(500).json({ 
-      error: "SERVER_ERROR", 
-      message: "An error occurred while adding the Genre" 
+    console.error("Error adding Genre:", {
+      error: err.message,
+      stack: err.stack,
+    });
+    return res.status(500).json({
+      error: "SERVER_ERROR",
+      message: "An error occurred while adding the Genre",
     });
   }
 };
 
-
-
 const deleteGenre = async (req, res) => {
   try {
     // Check if the Genre exists
-    const GenreResult = await client.query(queryes.getGenreById, [req.params.id]);
+    const GenreResult = await client.query(queryes.getGenreById, [
+      req.params.id,
+    ]);
 
     if (GenreResult.rowCount === 0) {
-      return res.status(404).json({ error: "Genre not found"});
+      return res.status(404).json({ error: "Genre not found" });
     }
 
     // Delete the Genre
@@ -80,12 +86,16 @@ const deleteGenre = async (req, res) => {
 
     // Respond with success
     return res.status(200).json({ message: "Genre deleted successfully" });
-
   } catch (err) {
-    console.error('Error deleting Genre:', err);
+    console.error("Error deleting Genre:", err);
 
     // Handle specific errors if necessary, otherwise send a generic error response
-    return res.status(500).json({ error: "An error occurred while deleting the Genre", message: err.message });
+    return res
+      .status(500)
+      .json({
+        error: "An error occurred while deleting the Genre",
+        message: err.message,
+      });
   }
 };
 
@@ -93,7 +103,9 @@ const updateGenre = async (req, res) => {
   const { name } = req.body;
   try {
     // Check if the Genre exists
-    const GenreResult = await client.query(queryes.getGenreById, [req.params.id]);
+    const GenreResult = await client.query(queryes.getGenreById, [
+      req.params.id,
+    ]);
     if (GenreResult.rowCount === 0) {
       return res.status(404).json({ error: "Genre not found" });
     }
@@ -102,16 +114,20 @@ const updateGenre = async (req, res) => {
     // Respond with success message
     return res.status(200).json({ message: "Genre updated successfully" });
   } catch (err) {
-    console.error('Error updating Genre:', err);
+    console.error("Error updating Genre:", err);
     // Handle specific errors if necessary, otherwise send a generic error response
-    return res.status(500).json({ error: "An error occurred while updating the Genre", message: err.message });
+    return res
+      .status(500)
+      .json({
+        error: "An error occurred while updating the Genre",
+        message: err.message,
+      });
   }
-}
+};
 module.exports = {
   getGenres,
   getGenreById,
   addGenre,
   deleteGenre,
-  updateGenre
+  updateGenre,
 };
-  

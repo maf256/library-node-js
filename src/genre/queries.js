@@ -1,6 +1,5 @@
 const getGenre = "SELECT * FROM genre";
 
-
 const getGenres = "SELECT * FROM genre";
 
 const getGenreById = "SELECT * FROM genre WHERE id = $1";
@@ -10,11 +9,11 @@ const deleteGenre = "DELETE FROM genre WHERE id = $1";
 const updateGenre = "UPDATE genre SET name = $1 WHERE id = $2 RETURNING *";
 
 module.exports = {
-    getGenres,
-    getGenreById,
-    getGenre,
-    addGenre,
-    checkGenreExists,
-    deleteGenre,
-    updateGenre
-}
+  getGenres,
+  getGenreById,
+  getGenre,
+  addGenre,
+  checkGenreExists,
+  deleteGenre,
+  updateGenre,
+};

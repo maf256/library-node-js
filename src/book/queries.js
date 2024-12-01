@@ -21,7 +21,7 @@ const getBooks = `
     b.id
   ORDER BY 
     b.title;
-`
+`;
 
 const getBookById = `
   SELECT 
@@ -50,7 +50,7 @@ const getBookById = `
 
 const addBook = `INSERT INTO book 
   (title, publication_year,copies_available,total_copies) 
-  VALUES ($1, $2, $3, $4 ) RETURNING *`;	
+  VALUES ($1, $2, $3, $4 ) RETURNING *`;
 
 const bookAuthorsInsertQuery = `
     INSERT INTO book_authors (book_id, author_id) VALUES ($1, $2);
@@ -70,7 +70,6 @@ const updateBookQuery = `
   RETURNING *;
 `;
 
-
 module.exports = {
   getBooks,
   getBookById,
@@ -79,5 +78,5 @@ module.exports = {
   deleteBook,
   bookAuthorsInsertQuery,
   bookGenresInsertQuery,
-  updateBookQuery  
-}
+  updateBookQuery,
+};

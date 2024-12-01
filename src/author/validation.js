@@ -1,11 +1,11 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 // Schema for adding/updating an author
 const authorSchema = Joi.object({
   id: Joi.number().integer().min(1).optional(),
   name: Joi.string().min(2).max(100).required(),
   biography: Joi.string().max(1000).required(),
-  birthday: Joi.date().iso().required()
+  birthday: Joi.date().iso().required(),
 });
 
 // Middleware to validate data
