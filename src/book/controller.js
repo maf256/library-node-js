@@ -1,58 +1,30 @@
 const client = require("../../db");
 const queryes = require("./queries");
-// const { Pool } = require('pg');
-// const Pool = require("../../db");
-// const getBooks = async (req, res) => {
-//   try {
-//     const result = await client.query(queryes.getBooks);
-//     return res.status(200).json(result.rows);
-//   } catch (err) {
-//     console.log('Error fetching Books:',err);
-//     return res.status(500).json({ error: "An error occurred while fetching Books" });
-//   }
-// };
+
+
+const handleError = (res, error, message, statusCode = 500) => {
+  console.error(message, error);
+  return res.status(statusCode).json({ error: message });
+};
+
 async function getAllBooks(req, res) {
-  // const client = await pool.connect();
-
   try {
-    // Query to fetch all books with their authors and genres
-    // const booksQuery = `
-    //   SELECT 
-    //     b.id AS book_id,
-    //     b.title,
-    //     b.publication_year,
-    //     b.copies_available,
-    //     b.total_copies,
-    //     json_agg(DISTINCT jsonb_build_object('id', a.id, 'name', a.name)) AS authors,
-    //     json_agg(DISTINCT jsonb_build_object('id', g.id, 'name', g.name)) AS genres
-    //   FROM 
-    //     book b
-    //   LEFT JOIN 
-    //     book_authors ba ON b.id = ba.book_id
-    //   LEFT JOIN 
-    //     author a ON ba.author_id = a.id
-    //   LEFT JOIN 
-    //     book_genres bg ON b.id = bg.book_id
-    //   LEFT JOIN 
-    //     genre g ON bg.genre_id = g.id
-    //   GROUP BY 
-    //     b.id
-    //   ORDER BY 
-    //     b.title;
-    // `;
-
     const result = await client.query(queryes.getBooks);
-
-    // Return the list of books
     return res.status(200).json(result.rows);
-
   } catch (error) {
-    console.error('Error fetching books:', error);
-    return res.status(500).json({ error: "Error fetching books" });
+    console.error("Error details:", error.stack);
+    handleError(res, error, "Error fetching books");
   } finally {
-    // client.release();
+    if (client) {
+      try {
+        // client.release();
+      } catch (releaseError) {
+        console.error("Error releasing client:", releaseError);
+      }
+    }
   }
 }
+
 
 
 // _________________________________ 
@@ -69,51 +41,45 @@ const getBookById = async (req, res) => {
     // Respond with the Book details
     return res.status(200).json(result.rows[0]);
 
-  } catch (err) {
-    console.error('Error fetching Book:', err);
-
-    // Respond with a generic error message
-    return res.status(500).json({ error: "An error occurred while fetching the Book" });
+  } catch (error) {
+    console.error("Error details:", error.stack); // Log stack trace for debugging
+    handleError(res, error, "Error fetching books");
   }
 };
 
 
 // Add Book With Authors And Genres
-const addBook = async (req, res) => {
-  const { 
-    title, 
-    author_id, 
-    genre_id, 
-    publication_year, 
-    copies_available, 
-    total_copies 
-  } = req.body;
+// const addBook = async (req, res) => {
+//   const { 
+//     title, 
+//     publication_year, 
+//     copies_available, 
+//     total_copies 
+//   } = req.body;
 
-  try {
-    // Check if the Book already exists
-    const BookExistsResult = await client.query(queryes.checkBookExists, [title]);
+//   try {
+//     // Check if the Book already exists
+//     const BookExistsResult = await client.query(queryes.checkBookExists, [title]);
 
-    if (BookExistsResult.rowCount > 0) {
-      return res.status(400).json({ error: "Book already exists" });
-    }
+//     if (BookExistsResult.rowCount > 0) {
+//       return res.status(400).json({ error: "Book already exists" });
+//     }
 
-    // Add the new Book
-    const addBookResult = await client.query(queryes.addBook, [
-      title,  
-      publication_year, 
-      copies_available, 
-      total_copies]);
+//     // Add the new Book
+//     const addBookResult = await client.query(queryes.addBook, [
+//       title,  
+//       publication_year, 
+//       copies_available, 
+//       total_copies]);
 
-    // Respond with the newly added Book's details
-    return res.status(201).json({ message: "Book added successfully", Book: addBookResult.rows[0] });
+//     // Respond with the newly added Book's details
+//     return res.status(201).json({ message: "Book added successfully", Book: addBookResult.rows[0] });
 
-  } catch (err) {
-    console.error('Error adding Book:', err);
-
-    // Respond with a generic error message
-    return res.status(500).json({ error: "An error occurred while adding the Book", message: err.message });
-  }
-};
+//   } catch (error) {
+//     console.error("Error details:", error.stack); // Log stack trace for debugging
+//     handleError(res, error, "Error fetching books");
+//   }
+// };
 
 // Add Book 
 async function addBookWithAuthorsAndGenres(req, res) {
@@ -159,7 +125,6 @@ async function addBookWithAuthorsAndGenres(req, res) {
 
     for (const genreId of genreIds) {
       console.log("newBookId, genreId",newBookId, genreId);
-      
       await client.query(queryes.bookGenresInsertQuery, [newBookId, genreId]);
     }
 
@@ -170,34 +135,13 @@ async function addBookWithAuthorsAndGenres(req, res) {
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Error adding book:', error);
+    console.error("Error details:", error.stack); // Log stack trace for debugging
+    handleError(res, error, "Error fetching books");
   } finally {
     // client.release();
   }
 }
 
-// const deleteBook = async (req, res) => {
-//   try {
-//     // Check if the Book exists
-//     const BookResult = await client.query(queryes.getBookById, []);
-
-//     if (BookResult.rowCount === 0) {
-//       return res.status(404).json({ error: "Book not found"});
-//     }
-
-//     // Delete the Book
-//     await client.query(queryes.deleteBook, [req.params.id]);
-
-//     // Respond with success
-//     return res.status(200).json({ message: "Book deleted successfully" });
-
-//   } catch (err) {
-//     console.error('Error deleting Book:', err);
-
-//     // Handle specific errors if necessary, otherwise send a generic error response
-//     return res.status(500).json({ error: "An error occurred while deleting the Book", message: err.message });
-//   }
-// };
 
 async function deleteBook(req, res) {
   const bookId  = req.params.id; // Get the book ID from the request parameters
@@ -226,38 +170,18 @@ async function deleteBook(req, res) {
 
     await client.query('COMMIT');
     console.log('Book and all associated data deleted successfully.');
-
     return res.status(200).json({ message: "Book deleted successfully", deletedBook: deleteBookResult.rows[0] });
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Error deleting book:', error);
-    return res.status(500).json({ error: "Error deleting book" });
+    console.error("Error details:", error.stack); // Log stack trace for debugging
+    handleError(res, error, "Error fetching books");
   } finally {
 
     // client.release();
   }
 }
 
-
-// const updateBook = async (req, res) => {
-//   const { title, author_id, genre_id, publication_year, copies_available, total_copies } = req.body;
-//   try {
-//     // Check if the Book exists
-//     const BookResult = await client.query(queryes.getBookById, [req.params.id]);
-//     if (BookResult.rowCount === 0) {
-//       return res.status(404).json({ error: "Book not found" });
-//     }
-//     // Update the Genre
-//     await client.query(queryes.updateBook, [title, author_id, genre_id, publication_year, copies_available, total_copies, req.params.id]);
-//     // Respond with success message
-//     return res.status(200).json({ message: "Book updated successfully" });
-//   } catch (err) {
-//     console.error('Error updating Book:', err);
-//     // Handle specific errors if necessary, otherwise send a generic error response
-//     return res.status(500).json({ error: "An error occurred while updating the Book", message: err.message });
-//   }
-// }
 
 async function updateBookWithAuthorsAndGenres(req, res) {
   const { 
@@ -276,13 +200,6 @@ async function updateBookWithAuthorsAndGenres(req, res) {
   try {
     await client.query('BEGIN');
 
-    // Step 1: Update book details
-    // const updateBookQuery = `
-    //   UPDATE book 
-    //   SET title = $1, publication_year = $2, copies_available = $3, total_copies = $4
-    //   WHERE id = $5
-    //   RETURNING *;
-    // `;
     const updateBookValues = [title, publication_year, copies_available, total_copies, bookId];
 
     const updateBookResult = await client.query(queryes.updateBookQuery, updateBookValues);
@@ -318,21 +235,18 @@ async function updateBookWithAuthorsAndGenres(req, res) {
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Error updating book:', error);
-    return res.status(500).json({ error: "Error updating book" });
+    console.error("Error details:", error.stack); // Log stack trace for debugging
+    console.log("error=",error,"res=",res);
+    
+    handleError(res, error, "Error fetching books");
   } finally {
     // client.release();
   }
 }
 
-// ______________________________
-
-
-
 module.exports = {
   getAllBooks,
   getBookById,
-  addBook,
   deleteBook,
   addBookWithAuthorsAndGenres,
   updateBookWithAuthorsAndGenres,

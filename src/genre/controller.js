@@ -43,22 +43,27 @@ const addGenre = async (req, res) => {
     const GenreExistsResult = await client.query(queryes.checkGenreExists, [name]);
 
     if (GenreExistsResult.rowCount > 0) {
-      return res.status(400).json({ error: "Genre already exists" });
+      return res.status(400).json({ error: "DUPLICATE_GENRE", message: "Genre already exists" });
     }
 
     // Add the new Genre
     const addGenreResult = await client.query(queryes.addGenre, [name]);
 
     // Respond with the newly added Genre's details
-    return res.status(201).json({ message: "Genre added successfully", Genre: addGenreResult.rows[0] });
+    return res.status(201).json({ 
+      message: "Genre added successfully", 
+      genre: addGenreResult.rows[0] 
+    });
 
   } catch (err) {
-    console.error('Error adding Genre:', err);
-
-    // Respond with a generic error message
-    return res.status(500).json({ error: "An error occurred while adding the Genre" });
+    console.error('Error adding Genre:', { error: err.message, stack: err.stack });
+    return res.status(500).json({ 
+      error: "SERVER_ERROR", 
+      message: "An error occurred while adding the Genre" 
+    });
   }
 };
+
 
 
 const deleteGenre = async (req, res) => {

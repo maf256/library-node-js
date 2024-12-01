@@ -1,11 +1,16 @@
 const { Router } = require('express');
-const controller = require('./controller');
+const { getGenreById,
+    getGenres,
+    addGenre,
+    deleteGenre,
+    updateGenre} = require('./controller');
+const { validateGenre, genreSchema } = require('./validation');
 
 const router = Router(); 
 
-router.get('/', controller.getGenres);
-router.post('/', controller.addGenre);
-router.get('/:id', controller.getGenreById);
-router.put('/:id', controller.updateGenre);
-router.delete('/:id', controller.deleteGenre);
+router.get('/', getGenres);
+router.post('/', validateGenre(genreSchema), addGenre);
+router.get('/:id', getGenreById);
+router.put('/:id', validateGenre(genreSchema), updateGenre);
+router.delete('/:id', deleteGenre);
 module.exports = router;
