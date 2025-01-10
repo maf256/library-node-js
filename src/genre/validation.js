@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 // Schema for validating Genre data
 const genreSchema = Joi.object({
-  id: Joi.number().integer().min(1).optional(),
+  id: Joi.number().integer().min(-1).optional(),
   name: Joi.string().min(2).max(255).required(), // Genre name must be between 2 and 255 characters
 });
 
