@@ -2,6 +2,8 @@ const client = require("../../db");
 const queryes = require("./queries");
 
 const getGenres = async (req, res) => {
+  console.log("getGenres");
+  
   try {
     const result = await client.query(queryes.getGenres);
     return res.status(200).json(result.rows);

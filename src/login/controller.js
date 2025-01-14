@@ -8,18 +8,15 @@ const { generateToken } = require('../jsonwebtoken');
 const getUserByEmail = async (req, res) => {
   const { email, password } = req.body;
   const emailLowerCase = email.toLowerCase();
-  console.log("email, password", emailLowerCase, password);
     
   try {
     // Execute the query using await
     const user = await client.query(queryes.getUserByEmail, [emailLowerCase]);
-    console.log("user", user.rows[0]);
     
     // Check if the Genre exists
     if (user.rowCount === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    console.log("password match", bcrypt.compareSync(password, user.rows[0].password));
     
     if (user.rows[0] && bcrypt.compareSync(password, user.rows[0].password)) {
       const token = generateToken(user._id);

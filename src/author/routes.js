@@ -7,13 +7,14 @@ const {
   deleteAuthor,
 } = require("./controller");
 const { validateAuthor, authorSchema } = require("./validation");
+const { authenticate } = require("../middleware");
 
 const router = Router();
 
-router.get("/", getAuthors);
-router.post("/", validateAuthor(authorSchema), addAuthor);
-router.put("/:id", validateAuthor(authorSchema), updateAuthor);
-router.get("/:id", getAuthorById);
-router.delete("/:id", deleteAuthor);
+router.get("/",authenticate, getAuthors);
+router.post("/",authenticate, validateAuthor(authorSchema), addAuthor);
+router.put("/:id",authenticate, validateAuthor(authorSchema), updateAuthor);
+router.get("/:id",authenticate, getAuthorById);
+router.delete("/:id",authenticate, deleteAuthor);
 
 module.exports = router;
