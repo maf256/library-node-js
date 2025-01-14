@@ -2,6 +2,7 @@ const express = require("express");
 const Genre = require("./src/genre/routes");
 const Book = require("./src/book/routes");
 const Authors = require("./src/author/routes");
+const Login = require("./src/login/routes");
 const cors = require("cors");
 
 const app = express();
@@ -26,6 +27,9 @@ app.use("/book", Book);
 
 //_________________Author_________________
 app.use("/author", Authors);
+
+//_________________Author_________________
+app.use("/login", Login);
 
 // Start server (Render handles HTTPS)
 app.listen(port, () => {
